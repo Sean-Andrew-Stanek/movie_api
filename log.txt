@@ -34,3 +34,8 @@ Timestamp: Fri Oct 13 2023 20:30:25 GMT+0900 (Korean Standard Time)
 URL: /favicon.ico 
 Timestamp: Fri Oct 13 2023 20:30:25 GMT+0900 (Korean Standard Time) 
 
+::1 - - [15/Oct/2023:08:11:50 +0000] "GET /movies HTTP/1.1" 500 1409 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+::1 - - [15/Oct/2023:08:18:03 +0000] "GET /movies HTTP/1.1" 200 655 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+::1 - - [15/Oct/2023:08:19:07 +0000] "GET /movies HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+::1 - - [15/Oct/2023:08:19:09 +0000] "GET / HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
+::1 - - [15/Oct/2023:08:19:14 +0000] "GET /movies HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
