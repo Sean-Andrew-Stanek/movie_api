@@ -1,35 +1,12 @@
 //Location:  '.\Documents\GitHub\movie_api\'
 
-const http = require('http'),
-fs = require('fs'),
-url = require('url');
+const app = express(),
+    bodyParser = require('body-parser'),
+    uuid = require('uuid'),
+    top_ten_movies = require('./movies.json');
 
-http.createServer((request, response) => {
-    let address = request.url,
-        q = url.parse(address,true),
-        filePath = '';
-
-    fs.appendFile('log.txt', `URL: ${address} \nTimestamp: ${new Date()} \n\n`, (err)=>{
-        if(err)
-            console.log(err);
-        else
-            console.log('Added to log.');
-    })
-
-    if(q.pathname.includes('documentation'))
-        filePath = (__dirname + '/documentation.html');
-    else
-        filePath = 'index.html';
-
-    fs.readFile(filePath, (err, data) => {
-        if(err) 
-            throw err;
-
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write(data);
-        response.end();
-
-    })
     
-}).listen(8080);
-console.log('My test server is running on Port 8080');
+app.use(bodyParser.json());
+
+
+app.listen(8080, ()=>console.log("Server started on port 8080"));
