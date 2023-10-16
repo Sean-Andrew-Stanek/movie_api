@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "name": "Susie",
+        "favoriteMovies": []
+    },
+    {
+        "id": 2,
+        "name": "Julie",
+        "favoriteMovies": ["Movie1"]
+    }
+]
