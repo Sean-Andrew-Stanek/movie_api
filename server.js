@@ -104,7 +104,7 @@ app.delete('/users/:id/:movieTitle', (req, res) => {
 
     if(user){
         user.favoriteMovies = user.favoriteMovies.filter( title => title !== movieTitle);
-        res.status(200).send(`${movieTitle} has been removed to ${user.name}'s array`);
+        res.status(200).send(`${movieTitle} has been removed from user ${user.id}'s array`);
     }else{
         res.status(400).send('Please input name')
     }
@@ -119,7 +119,7 @@ app.delete('/users/:id', (req, res) => {
 
     if(user){
         users = users.filter( user => user.id != id);
-        res.status(200).send(`User ${user.name} has been removed`);
+        res.status(200).send(`User ${user.id} has been removed`);
     }else{
         res.status(400).send('Please input name')
     }
