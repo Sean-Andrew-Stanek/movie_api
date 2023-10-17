@@ -3,9 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./style.css" />
     <title>Document</title>
 </head>
+
 <body>
-    Random Documentation of Randomness.
+    <table>
+        <tr>
+            <th>Request</th>
+            <th>URL</th>
+            <th>HTTP Method</th>
+            <th>Request Body Format</th>
+            <th>Response format</th>
+        </tr>
+        <tr>
+            <td>GET all movies</td>
+            <td class="endpoint">/movies</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON object holding all data on all movies</td>
+        </tr>
+        <tr>
+            <td>GET data about a movie by title</td>
+            <td class="endpoint">/movies/[title]</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON holding data about a single student containing an
+                title, actor, director, all info on the director, genre 
+                with description, release date and image URL.  <br>Example:<br>
+                <span class="example-text">{<br>&emsp;
+                    "Title": "Movie1",<br>&emsp;
+                    "Actor": "Actor McActorson",<br>&emsp;
+                    "Director":{<br>&emsp;&emsp;
+                        "Name": "Mr. Director",<br>&emsp;&emsp;
+                        "Bio": "He is a director.  He's human.  He also directs.",<br>&emsp;&emsp;
+                        "Birth Year": 1999,<br>&emsp;&emsp;
+                        "Death Year": 2099<br>&emsp;
+                    },<br>&emsp;
+                    "Genre": {<br>&emsp;&emsp;
+                        "Name": "Thriller",<br>&emsp;&emsp;
+                        "Description": "Thriller is a scary movie."<br>&emsp;
+                    },<br>&emsp;
+                    "Released": "Today",<br>&emsp;
+                    "Image": ""<br>
+                }</span>
+            </td>
+        </tr>
+        <tr>
+            <td>GET description of genre</td>
+            <td class="endpoint">/movies/genre/[name]</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON holding a description of a genre. <br>Example:<br>
+            <span class="example-text">
+                {<br>
+                &emsp;"Name": "Thriller",<br>
+                &emsp;"Description": "Thriller is a scary movie."<br>
+                }
+            </span>
+            </td>
+        </tr>
+        <tr>
+            <td>GET data about a director by name</td>
+            <td class="endpoint">/movies/director/[name]</td>
+            <td>GET</td>
+            <td>None</td>
+            <td>A JSON holding a description of a genre. <br>Example:
+                <span class="example-text"><br>
+                    {<br>
+                    &emsp;    "Name": "Mr. Director",<br>
+                    &emsp;    "Bio": "He is a director.  He's human.  He also directs.",<br>
+                    &emsp;    "Birth Year": 1999,<br>
+                    &emsp;    "Death Year": 2099<br>
+                    }
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>CREATE a new user</td>
+            <td class="endpoint">/users</td>
+            <td>POST</td>
+            <td>A JSON object holding a name. <br>Example:<br>
+                <span class="example-text">
+                {<br>
+                &emsp;"Name": "John Doe"<br>
+                }
+                </span>
+            </td>
+            <td>A JSON object with all object data of new student along with new id in uuid.v4 form.  Example:<br>
+                <span class="example-text">
+                {<br>
+                &emsp;"Name": "John Doe"<br>
+                &emsp;"id": "a31e0082-f522-45f2-b703-8d64fab0fb4b"<br>
+                }
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>UPDATE the username of a user</td>
+            <td class="endpoint">/users/[id]</td>
+            <td>PUT</td>
+            <td>A JSON object with updated name.  <br>Example:<br>
+                <span class="example-text">
+                {<br>
+                &emsp;"Name": "Jane Doe"<br>
+                }
+            </span>
+            </td>
+            <td>A JSON object of all data for the updated user.<br>  Example:<br>
+            <span class="example-text">
+            {<br>
+            &emsp;"id": 1,<br>
+            &emsp;"name": "Bobi",<br>
+            &emsp;"favoriteMovies": []<br>
+            }
+            </span>
+            </td>
+        </tr>
+        <tr>
+            <td>CREATE a new entry from a user's favorite movies</td>
+            <td class="endpoint">/users/[id]/[movie_title]</td>
+            <td>POST</td>
+            <td>None</td>
+            <td>Returns a message with the added movie title and the user id.</td>
+        </tr>
+        <tr>
+            <td>DELETE an entry from a user's favorite movies</td>
+            <td class="endpoint">/users/[id]/[movie_title]</td>
+            <td>DELETE</td>
+            <td>None</td>
+            <td>Returns a message with the deleted movie title and the user id.</td>
+        </tr>
+        <tr>
+            <td>DELETE existing user</td>
+            <td class="endpoint">/users/id</td>
+            <td>DELETE</td>
+            <td>None</td>
+            <td>Returns a message informing that the user has been removed</td>
+        </tr>
+    </table>
 </body>
 </html>

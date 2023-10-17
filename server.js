@@ -10,6 +10,8 @@ let users = require('./users.json')
 
 
 app.use(bodyParser.json());
+app.use(express.static('public'));
+
 
 
 //CREATE add new user
@@ -19,13 +21,13 @@ app.post('/users', (req, res) => {
     if(newUser.name) {
         newUser.id = uuid.v4();
         users.push(newUser);
-        res.status(201).json(users);
+        res.status(201).json(newUser);
     } else {
         res.status(400).send('user needs name');
     }
 });
 
-//Create user movie list
+//Create - add to user movie list
 app.post('/users/:id/:movieTitle', (req, res) => {
     const { id, movieTitle } = req.params;
 
@@ -33,7 +35,7 @@ app.post('/users/:id/:movieTitle', (req, res) => {
 
     if(user){
         user.favoriteMovies.push(movieTitle);
-        res.status(200).send(`${movieTitle} has been added to ${user.name}'s array`);
+        res.status(200).send(`${movieTitle} has been added to ${user.id}'s array`);
     }else{
         res.status(400).send('Please input name')
     }
@@ -45,7 +47,7 @@ app.get('/movies', (req, res) => {
     res.status(200).json(movies);
 });
 
-//READ by title
+//READ movie by title
 app.get('/movies/:title', (req, res) => {
     const { title } = req.params;
     const movie = movies.find( movie => movie.Title === title);
@@ -57,7 +59,7 @@ app.get('/movies/:title', (req, res) => {
     }
 });
 
-//READ by genre
+//READ description of genre
 app.get('/movies/genre/:genreName', (req, res) => {
     const { genreName } = req.params;
     const genre = movies.find( movie => movie.Genre.Name === genreName).Genre;
@@ -92,7 +94,6 @@ app.put('/users/:id', (req, res) => {
     }else{
         res.status(400).send('Please input name')
     }
-
 })
 
 //DELETE user movie list

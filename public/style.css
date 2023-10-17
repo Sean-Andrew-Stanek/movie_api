@@ -1,0 +1,42 @@
+body {
+    font-size: 1vw;
+}
+th{
+    border: black 1px solid;
+    background-color: rgba(200, 200, 200, 1);
+}
+
+td {
+        text-align:left;
+        border: black 1px solid;
+}
+
+table {
+    width: max(500px, 90%);
+    display: flexbox;
+    border: black 2px double;
+    border-spacing: 0;
+    text-align: left;
+}
+
+tr {
+    background-color: rgba(225, 225, 225, 1);
+    border: black 1px solid;
+}
+
+tr:nth-child(odd) {
+    background-color: rgba(255,255,255,1);
+}
+
+td:nth-child(even) {
+    background-color: rgba(240,240,240,1);
+}
+
+.endpoint{
+    color: rgba(0,0,150,1);
+}
+
+.example-text{
+    color: rgba(0,0,100,1);
+    font-size: .8vw;
+}
