@@ -4,28 +4,50 @@ const express = require('express'),
     app = express(),
     bodyParser = require('body-parser'),
     uuid = require('uuid'),
-    movies = require('./movies.json');
+    mongoose = require('mongoose'),
+    Models = require ('./models.js');
 
-let users = require('./users.json')
+const Movies = Models.Movie;
+const Users = Models.User;
 
+mongoose.connect('mongodb://127.0.0.1:27017/movieAPI', {useNewUrlParser: true, useUnifiedTopology: true});
 
+//Replace when mongoose is fully integrated
+let users = require('./users.json'), movies = require('./movies.json');
+
+//BODY PARSER
 app.use(bodyParser.json());
+app.use(express.urlencoded({extended: true}));
+
+//Accessable files
 app.use(express.static('public'));
 
-
-
 //CREATE add new user
-app.post('/users', (req, res) => {
-    const newUser = req.body;
-
-    if(newUser.name) {
-        newUser.id = uuid.v4();
-        users.push(newUser);
-        res.status(201).json(newUser);
-    } else {
-        res.status(400).send('user needs name');
-    }
+app.post('/users', async (req, res) => {
+    await Users.findOne( { username: req.body.username })
+        .then((user) => {
+            if(user) {
+                return res.status(400).send(req.body.username + ' already exists.');
+            }else {
+                Users.create({
+                    username: req.body.username,
+                    password: req.body.password,
+                    email: req.body.email,
+                    birthday: req.body.birthday
+                })
+                //Send back positive and the new user object
+                .then((user) => {res.status(201).json(user)})
+                .catch((error)=> {
+                    console.error(error);
+                    res.status(500).send('Error: ' + error);
+                });
+            }
+        }).catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+        });
 });
+
 
 //Create - add to user movie list
 app.post('/users/:id/:movieTitle', (req, res) => {
@@ -43,33 +65,45 @@ app.post('/users/:id/:movieTitle', (req, res) => {
 });
 
 //READ all movies
-app.get('/movies', (req, res) => {
-    res.status(200).json(movies);
+app.get('/movies', async (req, res) => {
+    await Movies.find()
+    .then((movies) => {
+        res.status(201).json(movies);
+    })
+    .catch((error) =>{
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+    });
 });
 
 //READ movie by title
-app.get('/movies/:title', (req, res) => {
-    const { title } = req.params;
-    const movie = movies.find( movie => movie.Title === title);
-
-    if(movie) {
-        res.status(200).json(movie);
-    }else{
-        res.status(400).send('no such movie');
-    }
+app.get('/movies/:title', async(req, res) => {
+    await Movies.findOne( {'title': req.params.title})
+    .then((movie)=>{
+        if(movie) {
+            res.status(200).json(movie);
+        }else{
+            res.status(400).send('Movie ' + reqTitle + ' not found.');
+        }
+    }).catch((error) =>{
+        console.error(error);
+        res.status(500).send("Error: " + error);
+    }) 
 });
 
 //READ description of genre
-app.get('/movies/genre/:genreName', (req, res) => {
-    const { genreName } = req.params;
-    const genre = movies.find( movie => movie.Genre.Name === genreName).Genre;
-   
-    if(genre){
-        res.status(200).json(genre);
-    }else{
-        res.status(400).send('no such movie');
-    }
-
+app.get('/movies/genre/:genreName', async(req, res) => {
+    await Movies.findOne( {'genre.name': req.params.genreName})
+    .then((genreName)=>{
+        if(genreName) {
+            res.status(200).json(genre);
+        }else{
+            res.status(400).send('No such genre found');
+        }
+    }).catch((error) =>{
+        console.error(error);
+        res.status(500).send("Error: " + error);
+    }) 
 });
 
 //READ by director
