@@ -32,20 +32,21 @@
                 title, description, director, all info on the director, genre 
                 with description, release date and image URL.  <br>Example:<br>
                 <span class="example-text">{<br>&emsp;
-                    "title": "Movie1",<br>&emsp;
-                    "description": "This movie is an action movie with lots of actors",<br>&emsp;
+                    "_id": "6530efc4551126f2b39df731",<br>&emsp;
+                    "title": "Predator",<br>&emsp;
+                    "description": "Dutch (Arnold Schwarzenegger), a soldier of fortune, is hired by the U.S. government to secretly rescue a group of politicians trapped in Guatemala. But when Dutch and his team, which includes weapons expert Blain (Jesse Ventura) and CIA agent George (Carl Weathers), land in Central America, something is gravely wrong. After finding a string of dead bodies, the crew discovers they are being hunted by a brutal creature with superhuman strength and the ability to disappear into its surroundings.",<br>&emsp;
                      "genre": {<br>&emsp;&emsp;
-                        "name": "Thriller",<br>&emsp;&emsp;
-                        "description": "Thriller is a scary movie."<br>&emsp;
+                        "name": "Action",<br>&emsp;&emsp;
+                        "description": "Implies a narrative that is defined by a journey (often including some form of pursuit) and is usually located within a fantasy or exoticized setting. Typically, though not always, such stories include the quest narrative. The predominant emphasis on violence and fighting in action films is the typical difference between the two genres.  (src: https://en.wikipedia.org/wiki/Film_genre)"<br>&emsp;
                     },<br>&emsp;
                     "Director":{<br>&emsp;&emsp;
-                        "name": "Mr. Director",<br>&emsp;&emsp;
-                        "bio": "He is a director.  He's human.  He also directs.",<br>&emsp;&emsp;
-                        "birth": 1999,<br>&emsp;&emsp;
-                        "death": 2099<br>&emsp;
+                        "name": "John McTiernan",<br>&emsp;&emsp;
+                        "bio": "John Campbell McTiernan Jr. is an American filmmaker. (src: https://en.wikipedia.org/wiki/John_McTiernan)",<br>&emsp;&emsp;
+                        "birth": "1951-01-08T00:00:00.000Z",<br>&emsp;&emsp;
+                        "death": <br>&emsp;
                     },<br>&emsp;
-                    "Image": "",<br>&emsp;
-                    "Featured": "False"<br>
+                    "image": "https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Predator_Movie.jpg/220px-Predator_Movie.jpg",<br>&emsp;
+                    "featured": "false"<br>
 
                 }</span>
             </td>
@@ -58,8 +59,8 @@
             <td>A JSON holding a description of a genre. <br>Example:<br>
             <span class="example-text">
                 {<br>
-                &emsp;"Name": "Thriller",<br>
-                &emsp;"Description": "Thriller is a scary movie."<br>
+                &emsp;"name": "Action",<br>
+                &emsp;"description": "Implies a narrative that is defined by a journey (often including some form of pursuit) and is usually located within a fantasy or exoticized setting. Typically, though not always, such stories include the quest narrative. The predominant emphasis on violence and fighting in action films is the typical difference between the two genres.  (src: https://en.wikipedia.org/wiki/Film_genre)"<br>
                 }
             </span>
             </td>
@@ -72,10 +73,10 @@
             <td>A JSON holding a description of a genre. <br>Example:
                 <span class="example-text"><br>
                     {<br>
-                    &emsp;    "Name": "Mr. Director",<br>
-                    &emsp;    "Bio": "He is a director.  He's human.  He also directs.",<br>
-                    &emsp;    "Birth Year": 1999,<br>
-                    &emsp;    "Death Year": 2099<br>
+                    &emsp;    "name": "John McTiernan",<br>
+                    &emsp;    "bio": "John Campbell McTiernan Jr. is an American filmmaker. (src: https://en.wikipedia.org/wiki/John_McTiernan)",<br>
+                    &emsp;    "birth": "1951-01-08T00:00:00.000Z",<br>
+                    &emsp;    "death": <br>
                     }
                 </span>
             </td>
@@ -84,56 +85,58 @@
             <td>CREATE a new user</td>
             <td class="endpoint">/users</td>
             <td>POST</td>
-            <td>A JSON object holding a name. <br>Example:<br>
+            <td>A JSON object holding a username, password, email and birthday. <br>Example:<br>
                 <span class="example-text">
                 {<br>
-                &emsp;"name": "John Doe"<br>
+                &emsp;"username": "AdamSandler"<br>
+                &emsp;"password": "LunchLady123"<br>
+                &emsp;"email": "aSandler@fake.co"<br>
+                &emsp;"birthday": "1923-02-31"<br>
                 }
                 </span>
             </td>
-            <td>A JSON object with all object data of new student along with new id in uuid.v4 form.  Example:<br>
+            <td>A JSON object with all object data of new user along with new id / version, date in date form and empty favoriteMovies list.<br>  Example:<br>
                 <span class="example-text">
                 {<br>
-                &emsp;"name": "John Doe"<br>
-                &emsp;"id": "a31e0082-f522-45f2-b703-8d64fab0fb4b"<br>
+                &emsp;"username": "AdamSandler"<br>
+                &emsp;"password": "LunchLady123"<br>
+                &emsp;"email": "aSandler@fake.co"<br>
+                &emsp;"favoriteMovies": []<br>
+                &emsp;"birthday": "1923-02-31T00:00:00.000Z"<br>
+                &emsp;"_id": 6534d16346f88d3cec78e4f8<br>
+                &emsp;"__v": 0<br>
                 }
                 </span>
             </td>
         </tr>
         <tr>
-            <td>UPDATE the username of a user</td>
+            <td>UPDATE the details of a user</td>
             <td class="endpoint">/users/[id]</td>
             <td>PUT</td>
-            <td>A JSON object with updated name.  <br>Example:<br>
+            <td>A JSON object with updated userame, password, email and / or birthday (minimum one field).  <br>Example:<br>
                 <span class="example-text">
                 {<br>
-                &emsp;"name": "Jane Doe"<br>
+                &emsp;"username": "MrNewson"<br>
+                &emsp;"email": "m.newson@fake.co"<br>
                 }
             </span>
             </td>
-            <td>A JSON object of all data for the updated user.<br>  Example:<br>
-            <span class="example-text">
-            {<br>
-            &emsp;"id": 1,<br>
-            &emsp;"name": "Jane Doe",<br>
-            &emsp;"favoriteMovies": []<br>
-            }
-            </span>
+            <td>User JSON with fields updated.<br> 
             </td>
         </tr>
         <tr>
             <td>CREATE a new entry from a user's favorite movies</td>
-            <td class="endpoint">/users/[id]/[movie_title]</td>
+            <td class="endpoint">/users/[id]/movies/[movie_title]</td>
             <td>POST</td>
             <td>None</td>
             <td>Returns a message with the added movie title and the user id.</td>
         </tr>
         <tr>
             <td>DELETE an entry from a user's favorite movies</td>
-            <td class="endpoint">/users/[id]/[movie_title]</td>
+            <td class="endpoint">/users/[id]/movies/[movie_title]</td>
             <td>DELETE</td>
             <td>None</td>
-            <td>Returns a message with the deleted movie title and the user id.</td>
+            <td>Returns a message confirming removal.</td>
         </tr>
         <tr>
             <td>DELETE existing user</td>

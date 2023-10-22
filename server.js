@@ -50,8 +50,8 @@ app.post('/users', async (req, res) => {
 });
 
 
-//Create - add to user movie list
-app.post('/users/:id/:movieTitle', async(req, res) => {
+//Create - add movie to user movie list
+app.post('/users/:id/movies/:movieTitle', async(req, res) => {
     await Users.findById(req.params.id)
     .then(async(user)=>{
         if(user){
@@ -106,9 +106,9 @@ app.get('/movies/:title', async(req, res) => {
 //READ description of genre
 app.get('/movies/genre/:genreName', async(req, res) => {
     await Movies.findOne( {'genre.name': req.params.genreName})
-    .then((genreName)=>{
-        if(genreName) {
-            res.status(200).json(genre);
+    .then((movie)=>{
+        if(movie) {
+            res.status(200).json(movie.genre);
         }else{
             res.status(400).send('No such genre found');
         }
@@ -170,23 +170,7 @@ app.put('/users/:id', async(req, res) => {
 
                 console.log("updated: " + updatedFields);
 
-                let updatedFieldsString = "";
-
-                if(updatedFields.length == 1)
-                {
-                    updatedFieldsString = updatedFields[0] + ".";
-                }else
-                {
-                    //FORMAT {a, b,... and z}
-                    updatedFieldsString = updatedFields[0];
-                    for(let i = 1; i < updatedFields.length-1; i++)
-                    {
-                        updatedFieldsString += ", " + updatedFields[i];
-                    }
-                    updatedFieldsString += " and " + updatedFields[updatedFields.length-1] + ".";
-                }
-
-                res.status(200).send('Updated fields: ' + updatedFieldsString);
+                res.status(200).json(user);
             }
         }else{
             res.status(400).send('No such user found');
@@ -199,7 +183,7 @@ app.put('/users/:id', async(req, res) => {
 
 
 //DELETE movie from user movie list
-app.delete('/users/:id/:movieID', (req, res) => {
+app.delete('/users/:id/movies/:movieID', (req, res) => {
     Users.findByIdAndUpdate(req.params.id, 
         {$pull: {favoriteMovies: req.params.movieID}}
     )
