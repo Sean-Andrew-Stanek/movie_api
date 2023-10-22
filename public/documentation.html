@@ -29,23 +29,24 @@
             <td>GET</td>
             <td>None</td>
             <td>A JSON holding data about a single student containing an
-                title, actor, director, all info on the director, genre 
+                title, description, director, all info on the director, genre 
                 with description, release date and image URL.  <br>Example:<br>
                 <span class="example-text">{<br>&emsp;
-                    "Title": "Movie1",<br>&emsp;
-                    "Actor": "Actor McActorson",<br>&emsp;
+                    "title": "Movie1",<br>&emsp;
+                    "description": "This movie is an action movie with lots of actors",<br>&emsp;
+                     "genre": {<br>&emsp;&emsp;
+                        "name": "Thriller",<br>&emsp;&emsp;
+                        "description": "Thriller is a scary movie."<br>&emsp;
+                    },<br>&emsp;
                     "Director":{<br>&emsp;&emsp;
-                        "Name": "Mr. Director",<br>&emsp;&emsp;
-                        "Bio": "He is a director.  He's human.  He also directs.",<br>&emsp;&emsp;
-                        "Birth Year": 1999,<br>&emsp;&emsp;
-                        "Death Year": 2099<br>&emsp;
+                        "name": "Mr. Director",<br>&emsp;&emsp;
+                        "bio": "He is a director.  He's human.  He also directs.",<br>&emsp;&emsp;
+                        "birth": 1999,<br>&emsp;&emsp;
+                        "death": 2099<br>&emsp;
                     },<br>&emsp;
-                    "Genre": {<br>&emsp;&emsp;
-                        "Name": "Thriller",<br>&emsp;&emsp;
-                        "Description": "Thriller is a scary movie."<br>&emsp;
-                    },<br>&emsp;
-                    "Released": "Today",<br>&emsp;
-                    "Image": ""<br>
+                    "Image": "",<br>&emsp;
+                    "Featured": "False"<br>
+
                 }</span>
             </td>
         </tr>

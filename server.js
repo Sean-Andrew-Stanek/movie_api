@@ -12,6 +12,7 @@ const Users = Models.User;
 
 mongoose.connect('mongodb://127.0.0.1:27017/movieAPI', {useNewUrlParser: true, useUnifiedTopology: true});
 
+const { update } = require('lodash');
 //Replace when mongoose is fully integrated
 let users = require('./users.json'), movies = require('./movies.json');
 
@@ -33,7 +34,7 @@ app.post('/users', async (req, res) => {
                     username: req.body.username,
                     password: req.body.password,
                     email: req.body.email,
-                    birthday: req.body.birthday
+                    birthday: new Date(req.body.birthday)
                 })
                 //Send back positive and the new user object
                 .then((user) => {res.status(201).json(user)})
@@ -50,18 +51,29 @@ app.post('/users', async (req, res) => {
 
 
 //Create - add to user movie list
-app.post('/users/:id/:movieTitle', (req, res) => {
-    const { id, movieTitle } = req.params;
-
-    let user = users.find( user => user.id == id);
-
-    if(user){
-        user.favoriteMovies.push(movieTitle);
-        res.status(200).send(`${movieTitle} has been added to ${user.id}'s array`);
-    }else{
-        res.status(400).send('Please input name')
-    }
-
+app.post('/users/:id/:movieTitle', async(req, res) => {
+    await Users.findById(req.params.id)
+    .then(async(user)=>{
+        if(user){
+            console.log(req.params.movieTitle);
+            await Movies.findOne({title: req.params.movieTitle})
+            .then(async(movie)=>{
+                if(movie){
+                    console.log(movie._id);
+                    //console.log(Object.values(user.favoriteMovies).indexOf({movie._id}));
+                    await Users.findByIdAndUpdate(req.params.id, {$addToSet: {favoriteMovies: movie.id}});
+                    res.status(200).send(req.params.movieTitle + " has been added");
+                }else{
+                    res.status(400).send("Could not find movie");
+                }
+            })
+        }else{
+            res.status(400).send("Could not find user.");
+        }
+    }).catch((error) => {
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+    })
 });
 
 //READ all movies
@@ -83,7 +95,7 @@ app.get('/movies/:title', async(req, res) => {
         if(movie) {
             res.status(200).json(movie);
         }else{
-            res.status(400).send('Movie ' + reqTitle + ' not found.');
+            res.status(400).send('Movie "' + req.params.title + '" not found.');
         }
     }).catch((error) =>{
         console.error(error);
@@ -107,57 +119,114 @@ app.get('/movies/genre/:genreName', async(req, res) => {
 });
 
 //READ by director
-app.get('/movies/director/:directorName', (req, res) => {
-    const { directorName } = req.params;
-    const director = movies.find( movie => movie.Director.Name === directorName).Director;
-   
-    res.status(200).json(director);
+app.get('/movies/director/:directorName', async(req, res) => {
+    await Movies.findOne( {'director.name': req.params.directorName})
+    .then((movie) => {
+        if(movie){
+            res.status(200).json(movie.director);
+        }
+        else{
+            res.status(400).send('No director found with name: ' + req.params.directorName);
+        }
+    }).catch((error) =>{
+        console.error(error);
+        res.status(500).send("Error: " + error);
+    })
 });
 
 
 //UPDATE user info - name
-app.put('/users/:id', (req, res) => {
-    const { id } = req.params;
-    const updateUser = req.body;
+app.put('/users/:id', async(req, res) => {
+    await Users.findById(req.params.id)
+    .then(async (user)=> {
+        if(user){
+            //Checks if there are updatable fields
+            if(!req.body.username && !req.body.password && !req.body.email && !req.body.birthday){
+                res.status(400).send('No updatable fields found'); 
+            }else{
+                let updatedFields = [];
 
-    let user = users.find( user => user.id == id);
+                if(req.body.username){
+                    await Users.findByIdAndUpdate(req.params.id, {username: req.body.username})
+                    updatedFields.push('username');
+                }
 
-    if(user){
-        user.name = updateUser.name;
-        res.status(200).json(user);
-    }else{
-        res.status(400).send('Please input name')
-    }
-})
+                if(req.body.password){
+                    await Users.findByIdAndUpdate(req.params.id, {password: req.body.password})
+                    updatedFields.push('password');
+                }
 
-//DELETE user movie list
-app.delete('/users/:id/:movieTitle', (req, res) => {
-    const { id, movieTitle } = req.params;
+                if(req.body.email){
+                    await Users.findByIdAndUpdate(req.params.id, {email: req.body.email})
+                    updatedFields.push('email');
+                }
 
-    let user = users.find( user => user.id == id);
+                if(req.body.birthday){
+                    console.log(req.body.birthday + " " + new Date(req.body.birthday));
+                    await Users.findByIdAndUpdate(req.params.id, {birthday: new Date(req.body.birthday)})
 
-    if(user){
-        user.favoriteMovies = user.favoriteMovies.filter( title => title !== movieTitle);
-        res.status(200).send(`${movieTitle} has been removed from user ${user.id}'s array`);
-    }else{
-        res.status(400).send('Please input name')
-    }
+                    updatedFields.push('birthday');
+                }
 
+                console.log("updated: " + updatedFields);
+
+                let updatedFieldsString = "";
+
+                if(updatedFields.length == 1)
+                {
+                    updatedFieldsString = updatedFields[0] + ".";
+                }else
+                {
+                    //FORMAT {a, b,... and z}
+                    updatedFieldsString = updatedFields[0];
+                    for(let i = 1; i < updatedFields.length-1; i++)
+                    {
+                        updatedFieldsString += ", " + updatedFields[i];
+                    }
+                    updatedFieldsString += " and " + updatedFields[updatedFields.length-1] + ".";
+                }
+
+                res.status(200).send('Updated fields: ' + updatedFieldsString);
+            }
+        }else{
+            res.status(400).send('No such user found');
+        }
+    }).catch((error) => {
+        console.error(error);
+        res.status(500).send("Error: " + error);
+    })
+});
+
+
+//DELETE movie from user movie list
+app.delete('/users/:id/:movieID', (req, res) => {
+    Users.findByIdAndUpdate(req.params.id, 
+        {$pull: {favoriteMovies: req.params.movieID}}
+    )
+    .then(()=>{
+    
+        res.status(200).send("movie removed");
+    
+    }).catch((error)=>{
+        console.error(error);
+        res.status(400).send("Error: " + error);
+    })
 });
 
 //DELETE user
 app.delete('/users/:id', (req, res) => {
-    const { id } = req.params;
-
-    let user = users.find( user => user.id == id);
-
-    if(user){
-        users = users.filter( user => user.id != id);
-        res.status(200).send(`User ${user.id} has been removed`);
-    }else{
-        res.status(400).send('Please input name')
-    }
-
+    Users.findByIdAndRemove(req.params.id)
+    .then((user) => {
+        if(user){
+            res.status(200).send("User Deleted");
+        }else{
+            res.status(400).send("User Not Found");
+        }
+    })
+    .catch((error)=>{
+        console.error(error);
+        res.status(500).send("Error: " + error);
+    })
 });
 
 
