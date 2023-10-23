@@ -222,6 +222,12 @@ app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', {sessio
 app.delete('/users/:id', passport.authenticate('jwt', {session: false }), (req, res) => {
     Users.findByIdAndRemove(req.params.id)
     .then((user) => {
+
+        if(req.user.username !== user.username)
+        {
+            return res.status(400).send('Permission denied');
+        }
+        
         if(user){
             res.status(200).send("User Deleted");
         }else{
