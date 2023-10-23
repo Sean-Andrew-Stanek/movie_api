@@ -20,6 +20,11 @@ let users = require('./users.json'), movies = require('./movies.json');
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended: true}));
 
+//AUTH
+let auth = require('./auth')(app);
+const passport = require('passport');
+require('./passport');
+
 //Accessable files
 app.use(express.static('public'));
 
@@ -77,7 +82,7 @@ app.post('/users/:id/movies/:movieTitle', async(req, res) => {
 });
 
 //READ all movies
-app.get('/movies', async (req, res) => {
+app.get('/movies', passport.authenticate('jwt', {session: false }), async (req, res) => {
     await Movies.find()
     .then((movies) => {
         res.status(201).json(movies);
