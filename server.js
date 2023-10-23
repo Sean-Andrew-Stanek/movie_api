@@ -198,8 +198,16 @@ app.put('/users/:id', passport.authenticate('jwt', {session: false }), async(req
 
 //DELETE movie from user movie list
 app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', {session: false }), (req, res) => {
+    
+    let user = Users.findById(req.params.id);
+    if(req.user.username !== user.username)
+    {
+        return res.status(400).send('Permission denied');
+    }
+    
     Movies.findOne({title: req.params.movieTitle})
     .then(async (movie)=>{
+
         if(!movie)
             res.status(500).send("Movie Not Found.");
         await Users.findByIdAndUpdate(req.params.id, {$pull: {favoriteMovies: movie._id}});
