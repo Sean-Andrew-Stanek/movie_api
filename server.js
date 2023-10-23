@@ -69,8 +69,6 @@ app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', {session:
             await Movies.findOne({title: req.params.movieTitle})
             .then(async(movie)=>{
                 if(movie){
-                    console.log(movie._id);
-                    //console.log(Object.values(user.favoriteMovies).indexOf({movie._id}));
                     await Users.findByIdAndUpdate(req.params.id, {$addToSet: {favoriteMovies: movie.id}});
                     res.status(200).send(req.params.movieTitle + " has been added");
                 }else{
@@ -199,14 +197,13 @@ app.put('/users/:id', passport.authenticate('jwt', {session: false }), async(req
 
 
 //DELETE movie from user movie list
-app.delete('/users/:id/movies/:movieID', passport.authenticate('jwt', {session: false }), (req, res) => {
-    Users.findByIdAndUpdate(req.params.id, 
-        {$pull: {favoriteMovies: req.params.movieID}}
-    )
-    .then(()=>{
-    
-        res.status(200).send("movie removed");
-    
+app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', {session: false }), (req, res) => {
+    Movies.findOne({title: req.params.movieTitle})
+    .then(async (movie)=>{
+        if(!movie)
+            res.status(500).send("Movie Not Found.");
+        await Users.findByIdAndUpdate(req.params.id, {$pull: {favoriteMovies: movie._id}});
+        res.status(200).send("Movie Removed")
     }).catch((error)=>{
         console.error(error);
         res.status(400).send("Error: " + error);
