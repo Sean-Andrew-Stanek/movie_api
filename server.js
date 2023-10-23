@@ -56,9 +56,14 @@ app.post('/users', async (req, res) => {
 
 
 //Create - add movie to user movie list
-app.post('/users/:id/movies/:movieTitle', async(req, res) => {
+app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', {session: false }), async(req, res) => {
     await Users.findById(req.params.id)
     .then(async(user)=>{
+        //Check if user is modifying their own data
+        if(req.user.username !== user.username)
+        {
+            return res.status(400).send('Permission denied');
+        }
         if(user){
             console.log(req.params.movieTitle);
             await Movies.findOne({title: req.params.movieTitle})
@@ -94,7 +99,7 @@ app.get('/movies', passport.authenticate('jwt', {session: false }), async (req, 
 });
 
 //READ movie by title
-app.get('/movies/:title', async(req, res) => {
+app.get('/movies/:title', passport.authenticate('jwt', {session: false }) , async(req, res) => {
     await Movies.findOne( {'title': req.params.title})
     .then((movie)=>{
         if(movie) {
@@ -109,7 +114,7 @@ app.get('/movies/:title', async(req, res) => {
 });
 
 //READ description of genre
-app.get('/movies/genre/:genreName', async(req, res) => {
+app.get('/movies/genre/:genreName', passport.authenticate('jwt', {session: false }) , async(req, res) => {
     await Movies.findOne( {'genre.name': req.params.genreName})
     .then((movie)=>{
         if(movie) {
@@ -124,7 +129,7 @@ app.get('/movies/genre/:genreName', async(req, res) => {
 });
 
 //READ by director
-app.get('/movies/director/:directorName', async(req, res) => {
+app.get('/movies/director/:directorName', passport.authenticate('jwt', {session: false }) , async(req, res) => {
     await Movies.findOne( {'director.name': req.params.directorName})
     .then((movie) => {
         if(movie){
@@ -141,9 +146,15 @@ app.get('/movies/director/:directorName', async(req, res) => {
 
 
 //UPDATE user info - name
-app.put('/users/:id', async(req, res) => {
+app.put('/users/:id', passport.authenticate('jwt', {session: false }), async(req, res) => {
     await Users.findById(req.params.id)
     .then(async (user)=> {
+        //Check if user is modifying their own data
+        if(req.user.username !== user.username)
+        {
+            return res.status(400).send('Permission denied');
+        }
+
         if(user){
             //Checks if there are updatable fields
             if(!req.body.username && !req.body.password && !req.body.email && !req.body.birthday){
@@ -175,7 +186,7 @@ app.put('/users/:id', async(req, res) => {
 
                 console.log("updated: " + updatedFields);
 
-                res.status(200).json(user);
+                res.status(200).json(await Users.findById(req.params.id));
             }
         }else{
             res.status(400).send('No such user found');
@@ -188,7 +199,7 @@ app.put('/users/:id', async(req, res) => {
 
 
 //DELETE movie from user movie list
-app.delete('/users/:id/movies/:movieID', (req, res) => {
+app.delete('/users/:id/movies/:movieID', passport.authenticate('jwt', {session: false }), (req, res) => {
     Users.findByIdAndUpdate(req.params.id, 
         {$pull: {favoriteMovies: req.params.movieID}}
     )
@@ -203,7 +214,7 @@ app.delete('/users/:id/movies/:movieID', (req, res) => {
 });
 
 //DELETE user
-app.delete('/users/:id', (req, res) => {
+app.delete('/users/:id', passport.authenticate('jwt', {session: false }), (req, res) => {
     Users.findByIdAndRemove(req.params.id)
     .then((user) => {
         if(user){
