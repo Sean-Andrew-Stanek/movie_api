@@ -13,12 +13,26 @@ const Users = Models.User;
 mongoose.connect('mongodb://127.0.0.1:27017/movieAPI', {useNewUrlParser: true, useUnifiedTopology: true});
 
 const { update } = require('lodash');
-//Replace when mongoose is fully integrated
-let users = require('./users.json'), movies = require('./movies.json');
 
 //BODY PARSER
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended: true}));
+
+//CORS (Keep right before AUTH)
+const cors = require('cors');
+
+let allowedOrigins = ['http://localhost:8080'];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if(!origin) return callback(null, true);
+        if(allowedOrigins.indexOf(origin) === -1){
+            let message = 'The CORS policy for this application doesn\'t allow access from origin ' + origin;
+            return callback(new Error(message), false);
+        }
+        return callback(null, true);        
+    }
+}));
 
 //AUTH
 let auth = require('./auth')(app);
@@ -30,6 +44,7 @@ app.use(express.static('public'));
 
 //CREATE add new user
 app.post('/users', async (req, res) => {
+    let hashedPassword = Users.hashPassword(req.body.Password);
     await Users.findOne( { username: req.body.username })
         .then((user) => {
             if(user) {
@@ -37,7 +52,7 @@ app.post('/users', async (req, res) => {
             }else {
                 Users.create({
                     username: req.body.username,
-                    password: req.body.password,
+                    password: hashedPassword,
                     email: req.body.email,
                     birthday: new Date(req.body.birthday)
                 })
