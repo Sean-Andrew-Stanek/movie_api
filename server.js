@@ -11,6 +11,10 @@ const express = require('express'),
 const Movies = Models.Movie;
 const Users = Models.User;
 
+
+//Port to listen on
+const port = process.env.PORT || 8080;
+
 mongoose.connect('mongodb://127.0.0.1:27017/movieAPI', {useNewUrlParser: true, useUnifiedTopology: true});
 
 const { update } = require('lodash');
@@ -281,7 +285,6 @@ app.delete('/users/:id', passport.authenticate('jwt', {session: false }), (req, 
     })
 });
 
-
-
-
-app.listen(8080, ()=>console.log("Server started on port 8080"));
+app.listen(port, '0.0.0.0',() => {
+    console.log('Listening on Port: ' + port);
+});
