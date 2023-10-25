@@ -11,14 +11,16 @@ const express = require('express'),
 const Movies = Models.Movie;
 const Users = Models.User;
 
-
-//Port to listen on
-const port = process.env.PORT || 8080;
-
 /* mongoose.connect('mongodb://127.0.0.1:27017/movieAPI', {useNewUrlParser: true, useUnifiedTopology: true}); */
 mongoose.connect(process.env.CONNECTION_URI, {useNewUrlParser: true, useUnifiedTopology: true});
 
 const { update } = require('lodash');
+
+//log.txt is created and kept as a write stream in appending mode
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {flags:'a'})
+
+//logger setup
+app.use(morgan('combined', {stream: accessLogStream}));
 
 //BODY PARSER
 app.use(bodyParser.json());
@@ -47,6 +49,10 @@ require('./passport.js');
 
 //Accessable files
 app.use(express.static('public'));
+
+app.get('/', (req, res) =>{
+    res.send('Welcome to my first database!')
+});
 
 //CREATE add new user
 app.post('/users', [
@@ -285,6 +291,9 @@ app.delete('/users/:id', passport.authenticate('jwt', {session: false }), (req, 
         res.status(500).send("Error: " + error);
     })
 });
+
+//Port to listen on
+const port = process.env.PORT || 8080;
 
 app.listen(port, '0.0.0.0',() => {
     console.log('Listening on Port: ' + port);
