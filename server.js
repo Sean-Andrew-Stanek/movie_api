@@ -63,8 +63,9 @@ app.post('/users', [
     check('username', 'Username contains non-alphanumeric characters - not allowed.').isAlphanumeric(),
     check('password', 'Password is required').not().isEmpty(),
     check('email', 'Email does not appear to be valid').isEmail()
-    ],async (req, res) => {
-
+    ], passport.authenticate('jwt', {session: false }), async (req, res) => {
+  
+  
     let errors = validationResult(req);
 
     if(!errors.isEmpty())
