@@ -15,7 +15,8 @@ const Users = Models.User;
 //Port to listen on
 const port = process.env.PORT || 8080;
 
-mongoose.connect('mongodb://127.0.0.1:27017/movieAPI', {useNewUrlParser: true, useUnifiedTopology: true});
+/* mongoose.connect('mongodb://127.0.0.1:27017/movieAPI', {useNewUrlParser: true, useUnifiedTopology: true}); */
+mongoose.connect(process.env.CONNECTION_URI, {useNewUrlParser: true, useUnifiedTopology: true});
 
 const { update } = require('lodash');
 
@@ -40,9 +41,9 @@ app.use(cors({
 }));
 
 //AUTH
-let auth = require('./auth')(app);
+let auth = require('./auth.js')(app);
 const passport = require('passport');
-require('./passport');
+require('./passport.js');
 
 //Accessable files
 app.use(express.static('public'));
