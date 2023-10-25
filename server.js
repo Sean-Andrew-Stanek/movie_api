@@ -5,7 +5,8 @@ const express = require('express'),
     bodyParser = require('body-parser'),
     uuid = require('uuid'),
     mongoose = require('mongoose'),
-    Models = require ('./models.js');
+    Models = require ('./models.js'),
+    {check, validationResult} = require('express-validator');
 
 const Movies = Models.Movie;
 const Users = Models.User;
@@ -43,8 +44,20 @@ require('./passport');
 app.use(express.static('public'));
 
 //CREATE add new user
-app.post('/users', async (req, res) => {
-    let hashedPassword = Users.hashPassword(req.body.Password);
+app.post('/users'/* , [
+    check('username', 'Username is required').isLength({min:5}),
+    check('username', 'Username contains non-alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('password', 'Password is required').not().isEmpty(),
+    check('email', 'Email does not appear to be valid').isEmail()
+    ] */,async (req, res) => {
+
+    let errors = validationResult(req);
+
+    if(!errors.isEmpty())
+        return res.status(422).json({ errors: errors.array() });
+
+    let hashedPassword = Users.hashPassword(req.body.password);
+
     await Users.findOne( { username: req.body.username })
         .then((user) => {
             if(user) {
@@ -159,7 +172,20 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', {session:
 
 
 //UPDATE user info - name
-app.put('/users/:id', passport.authenticate('jwt', {session: false }), async(req, res) => {
+app.put('/users/:id'/* , passport.authenticate('jwt', {session: false }), [
+    check('username', 'Username is required').isLength({min:5}),
+    check('username', 'Username contains non-alphanumeric characters - not allowed.').isNumeric(),
+    check('password', 'Password is required').not().isEmpty(),
+    check('email', 'Email does not appear to be valid').isEmail()
+    ] */, async(req, res) => {
+/* 
+    let errors = validationResult(req);
+
+    if(!errors.isEmpty())
+        return res.status(422).json({ errors: errors.array() }); */
+
+    let hashedPassword = Users.hashPassword(req.body.password);        
+
     await Users.findById(req.params.id)
     .then(async (user)=> {
         //Check if user is modifying their own data
@@ -181,7 +207,7 @@ app.put('/users/:id', passport.authenticate('jwt', {session: false }), async(req
                 }
 
                 if(req.body.password){
-                    await Users.findByIdAndUpdate(req.params.id, {password: req.body.password})
+                    await Users.findByIdAndUpdate(req.params.id, {password: hashedPassword})
                     updatedFields.push('password');
                 }
 
