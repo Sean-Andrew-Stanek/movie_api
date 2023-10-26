@@ -199,8 +199,6 @@ app.put('/users/:id', passport.authenticate('jwt', {session: false }), [
     if(!errors.isEmpty())
         return res.status(422).json({ errors: errors.array() });
 
-    let hashedPassword = Users.hashPassword(req.body.password);        
-
     await Users.findById(req.params.id)
     .then(async (user)=> {
         //Check if user is modifying their own data
@@ -222,6 +220,7 @@ app.put('/users/:id', passport.authenticate('jwt', {session: false }), [
                 }
 
                 if(req.body.password){
+                    let hashedPassword = Users.hashPassword(req.body.password); 
                     await Users.findByIdAndUpdate(req.params.id, {password: hashedPassword})
                     updatedFields.push('password');
                 }
