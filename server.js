@@ -141,12 +141,13 @@ app.get('/movies', passport.authenticate('jwt', {session: false }), async (req, 
 
 //READ movie by id
 app.get('/movies/:movieId', passport.authenticate('jwt', {session: false }) , async(req, res) => {
+    console.log(Movies)
     await Movies.findById(req.params.movieId)
     .then((movie)=>{
         if(movie) {
             res.status(200).json(movie);
         }else{
-            res.status(400).send('Movie "' + req.params.title + '" not found.');
+            res.status(400).send('Movie "' + req.params.movieId + '" not found.');
         }
     }).catch((error) =>{
         console.error(error);
