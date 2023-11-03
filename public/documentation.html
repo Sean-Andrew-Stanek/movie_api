@@ -24,8 +24,8 @@
             <td>A JSON object holding all data on all movies</td>
         </tr>
         <tr>
-            <td>GET data about a movie by title</td>
-            <td class="endpoint">/movies/[title]</td>
+            <td>GET data about a movie by id</td>
+            <td class="endpoint">/movies/[id]</td>
             <td>GET</td>
             <td>None</td>
             <td>A JSON holding data about a single student containing an
@@ -126,17 +126,17 @@
         </tr>
         <tr>
             <td>CREATE a new entry from a user's favorite movies</td>
-            <td class="endpoint">/users/[id]/movies/[movie_title]</td>
+            <td class="endpoint">/users/[id]/movies/[movie_id]</td>
             <td>POST</td>
             <td>None</td>
-            <td>Returns a message with the added movie title and the user id.</td>
+            <td>Returns the updated user.</td>
         </tr>
         <tr>
             <td>DELETE an entry from a user's favorite movies</td>
-            <td class="endpoint">/users/[id]/movies/[movie_title]</td>
+            <td class="endpoint">/users/[id]/movies/[movie_id]</td>
             <td>DELETE</td>
             <td>None</td>
-            <td>Returns a message confirming removal.</td>
+            <td>Returns the updated user.</td>
         </tr>
         <tr>
             <td>DELETE existing user</td>

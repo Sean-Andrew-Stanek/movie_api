@@ -99,7 +99,7 @@ app.post('/users', [
 
 
 //Create - add movie to user movie list
-app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', {session: false }), async(req, res) => {
+app.post('/users/:id/movies/:movieId', passport.authenticate('jwt', {session: false }), async(req, res) => {
     await Users.findById(req.params.id)
     .then(async(user)=>{
         //Check if user is modifying their own data
@@ -109,11 +109,11 @@ app.post('/users/:id/movies/:movieTitle', passport.authenticate('jwt', {session:
         }
         if(user){
             console.log(req.params.movieTitle);
-            await Movies.findOne({title: req.params.movieTitle})
+            await Movies.findById(req.params.movieId)
             .then(async(movie)=>{
                 if(movie){
                     await Users.findByIdAndUpdate(req.params.id, {$addToSet: {favoriteMovies: movie.id}});
-                    res.status(200).send(req.params.movieTitle + " has been added");
+                    res.status(200).json(await Users.findById(req.params.id));
                 }else{
                     res.status(400).send("Could not find movie");
                 }
@@ -139,9 +139,9 @@ app.get('/movies', passport.authenticate('jwt', {session: false }), async (req, 
     });
 });
 
-//READ movie by title
-app.get('/movies/:title', passport.authenticate('jwt', {session: false }) , async(req, res) => {
-    await Movies.findOne( {'title': req.params.title})
+//READ movie by id
+app.get('/movies/:movieId', passport.authenticate('jwt', {session: false }) , async(req, res) => {
+    await Movies.findById(req.params.movieId)
     .then((movie)=>{
         if(movie) {
             res.status(200).json(movie);
@@ -252,7 +252,7 @@ app.put('/users/:id', passport.authenticate('jwt', {session: false }), [
 
 
 //DELETE movie from user movie list
-app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', {session: false }), (req, res) => {
+app.delete('/users/:id/movies/:movieId', passport.authenticate('jwt', {session: false }), (req, res) => {
     
     let user = Users.findById(req.params.id);
     if(req.user.username !== user.username)
@@ -260,13 +260,13 @@ app.delete('/users/:id/movies/:movieTitle', passport.authenticate('jwt', {sessio
         return res.status(400).send('Permission denied');
     }
     
-    Movies.findOne({title: req.params.movieTitle})
+    Movies.findById(req.params.movieId)
     .then(async (movie)=>{
 
         if(!movie)
             res.status(500).send("Movie Not Found.");
         await Users.findByIdAndUpdate(req.params.id, {$pull: {favoriteMovies: movie._id}});
-        res.status(200).send("Movie Removed")
+        res.status(200).json(await Users.findById(req.params.id));
     }).catch((error)=>{
         console.error(error);
         res.status(400).send("Error: " + error);
