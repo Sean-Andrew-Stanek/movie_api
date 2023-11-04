@@ -253,13 +253,15 @@ app.put('/users/:id', passport.authenticate('jwt', {session: false }), [
 
 
 //DELETE movie from user movie list
-app.delete('/users/:id/movies/:movieId', passport.authenticate('jwt', {session: false }), (req, res) => {
+app.delete('/users/:id/movies/:movieId', passport.authenticate('jwt', {session: false }), async(req, res) => {
     
-    let user = Users.findById(req.params.id);
-    if(req.user.username !== user.username)
-    {
-        return res.status(400).send('Permission denied');
-    }
+    await Users.findById(req.params.id)
+    .then(async(user)=>{
+        if(req.user.username !== user.username)
+        {
+            return res.status(400).send('Permission denied');
+        }
+    });
     
     Movies.findById(req.params.movieId)
     .then(async (movie)=>{
