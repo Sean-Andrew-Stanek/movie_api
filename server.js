@@ -32,9 +32,9 @@ app.use(express.urlencoded({extended: true}));
 //CORS (Keep right before AUTH)
 const cors = require('cors');
 
-let allowedOrigins = ['http://localhost:8080, http://localhost:1234'];
+let allowedOrigins = ['http://localhost:8080, http://localhost:1234', 'https://meek-nougat-c5e693.netlify.app/'];
 
-app.use(cors(/* {
+app.use(cors({
     origin: (origin, callback) => {
         if(!origin) return callback(null, true);
         if(allowedOrigins.indexOf(origin) === -1){
@@ -43,7 +43,7 @@ app.use(cors(/* {
         }
         return callback(null, true);        
     }
-} */));
+}));
 
 //AUTH
 let auth = require('./auth.js')(app);
