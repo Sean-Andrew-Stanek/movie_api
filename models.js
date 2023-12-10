@@ -6,18 +6,28 @@ let movieSchema = mongoose.Schema({
     title: {type: String, required: true},
     description: {type: String, required: true},
     genre:{
-        name: String,
-        description: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Genre'
     },
 	director: {
-		name: String,
-		bio: String,
-		birth: Date,
-		death: Date
+		type: mongoose.Schema.Types.ObjectId,
+        ref: 'Director'
 	},
 	image: String,
-	featured: Boolean
+	featured: Boolean,
 });
+
+const directorSchema = mongoose.Schema({
+    name: String,
+    bio: String,
+    birth: Date,
+    death: Date,
+})
+
+const genreSchema = mongoose.Schema({
+    name: String,
+    description: String,
+})
 
 let userSchema = mongoose.Schema({
     username: {type: String, required: true},
@@ -37,7 +47,10 @@ userSchema.methods.validatePassword = function(password) {
 
 let Movie = mongoose.model('Movie', movieSchema);
 let User = mongoose.model('User', userSchema);
+let Genre = mongoose.model('Genre', genreSchema);
+let Director = mongoose.model('Director', directorSchema);
 
 module.exports.Movie = Movie;
 module.exports.User = User;
-
+module.exports.Genre = Genre;
+module.exports.Director = Director;
