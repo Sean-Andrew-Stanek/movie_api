@@ -14,22 +14,19 @@ const express = require('express'),
 const Movies = Models.Movie;
 const Users = Models.User;
 
-/* mongoose.connect('mongodb://127.0.0.1:27017/movieAPI', {useNewUrlParser: true, useUnifiedTopology: true}); */
+// Use for local testing
+// mongoose.connect('mongodb://127.0.0.1:27017/movieAPI', {useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.connect(process.env.CONNECTION_URI, {useNewUrlParser: true, useUnifiedTopology: true});
 
 const { update } = require('lodash');
 
-//log.txt is created and kept as a write stream in appending mode
+//logger
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {flags:'a'})
-
-//logger setup
 app.use(morgan('combined', {stream: accessLogStream}));
 
-//BODY PARSER
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended: true}));
 
-//CORS (Keep right before AUTH)
 const cors = require('cors');
 
 let allowedOrigins = ['http://localhost:8080, http://localhost:1234', 'https://meek-nougat-c5e693.netlify.app/'];
@@ -45,19 +42,29 @@ app.use(cors({
     }
 }));
 
-//AUTH
 let auth = require('./auth.js')(app);
 const passport = require('passport');
 require('./passport.js');
 
-//Accessable files
 app.use(express.static('public'));
 
 app.get('/', (req, res) =>{
-    res.send('Welcome to my first database!')
+    res.send('Check out the documentation at /public/documentation.html');
 });
 
-//CREATE add new user
+/**
+ * Handle POST requests to create a new user.
+ *
+ * @function
+ * @name createUser
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - A Promise that resolves when the user creation process is complete.
+ * @throws {Error} - If there is an unexpected error during the user creation process.
+ * @fires {Object} newUser - The newly created user object. Sent in the response on success.
+ * 
+ */
+
 app.post('/users', [
     check('username', 'Username is required').isLength({min:5}),
     check('username', 'Username contains non-alphanumeric characters - not allowed.').isAlphanumeric(),
@@ -98,7 +105,18 @@ app.post('/users', [
 });
 
 
-//Create - add movie to user movie list
+/**
+ * Handle POST requests to add a movie to a user's favorites.
+ *
+ * @function
+ * @name addFavoriteMovie
+ * @param {Object} req - Express request object with parameters: id (user ID), movieId (movie ID).
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - A Promise that resolves when the movie addition process is complete.
+ * @throws {Error} - If there is an unexpected error during the process or if permission is denied.
+ * @fires {Object} updatedUser - The updated user object (including the added movie) sent in the response on success.
+ */
+
 app.post('/users/:id/movies/:movieId', passport.authenticate('jwt', {session: false }), async(req, res) => {
     await Users.findById(req.params.id)
     .then(async(user)=>{
@@ -127,7 +145,19 @@ app.post('/users/:id/movies/:movieId', passport.authenticate('jwt', {session: fa
     })
 });
 
-//READ all movies
+/**
+ * Handle POST requests to add a movie to a user's favorites.
+ *
+ * @function
+ * @name addFavoriteMovie
+ * @param {Object} req - Express request object with parameters: id (user ID), movieId (movie ID).
+ * @param {Object} res - Express response object.
+ * @returns {Promise<void>} - A Promise that resolves when the movie addition process is complete.
+ * @throws {Error} - If there is an unexpected error during the process or if permission is denied.
+ * @fires {Object} updatedUser - The updated user object (including the added movie) sent in the response on success.
+ * CONTINUE HERE!!!  THIS IS NOT CORRECT!!!!
+ */
+
 app.get('/movies', passport.authenticate('jwt', {session: false }), async (req, res) => {
     await Movies.find()
     .then((movies) => {
